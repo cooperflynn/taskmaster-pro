@@ -105,7 +105,7 @@ $("#task-form-modal").on("shown.bs.modal", function() {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function() {
+$("#task-form-modal .btn-save").click(function() {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
@@ -204,17 +204,19 @@ $(".card .list-group").sortable({
   scroll: false,
   tolerance: "pointer",
   helper: "clone",
-  activate: function(event) {
-    
+  activate: function(event, ui) {
+    $(this).addClass("dropover");
+    $('.bottom-trash').addClass("bottom-trash-drag")
   },
-  deactivate: function(event) {
-   
+  deactivate: function(event, ui) {
+   $(this).removeClass("dropover");
+   $('.bottom-trash').removeClass("bottom-trash-drag");
   },
   over: function(event) {
-    
+    $(event.target).addClass("dropover-active");
   },
   out: function(event) {
-    
+    $(event.target).removeClass("dropover-active");
   },
   update: function(event) {
     // array to store the task data in
@@ -256,14 +258,14 @@ $("#trash").droppable({
   accept: ".card.list-group-item",
   tolerance: "touch",
   drop: function(event, ui) {
-    console.log("drop");
     ui.draggable.remove();
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   over: function(event, ui) {
-    console.log("over");
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event, ui) {
-    console.log("out");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 
@@ -290,10 +292,20 @@ var auditTask = function(taskEl) {
   else if (Math.abs(moment().diff(time, "days")) <=2) {
     $(taskEl).addClass("list-group-item-warning");
   }
-};                                                 
+
+  console.log(taskEl);
+};    
+
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  });
+}, 1800000);
 
 // load tasks for the first time
 loadTasks();
+
+
 
 
 
